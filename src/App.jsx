@@ -60,6 +60,7 @@ function App() {
   const [lastSearchedCity, setLastSearchedCity] = useState('');
   const [lastUpdated, setLastUpdated] = useState('');
   const [dataSource, setDataSource] = useState(null);
+  const [dataProvider, setDataProvider] = useState('');
 
   const handleSearch = async (rawCity) => {
     const trimmedCity = rawCity.trim();
@@ -83,6 +84,7 @@ function App() {
       setLastSearchedCity(data.current.city || trimmedCity);
       setLastUpdated(data.meta.fetchedAtLabel);
       setDataSource(data.meta.source);
+      setDataProvider(data.meta.providerLabel || '');
       return true;
     } catch (requestError) {
       setError(
@@ -106,25 +108,24 @@ function App() {
       <div className="app-container">
         <header className="hero-panel">
           <div className="hero-copy">
-            <p className="section-tag">Responsive Dynamic Weather Dashboard</p>
-            <h1>Live weather, clean structure, reviewer-ready evidence.</h1>
+            <p className="section-tag">PBD Lab 3</p>
+            <h1>Weather dashboard</h1>
             <p className="lead-text">
-              This React dashboard separates UI, API communication, and
-              documentation so the instructor can inspect both the experience
-              and the engineering decisions.
+              Search a city, read the current conditions, and compare the
+              five-day outlook in a compact responsive layout.
             </p>
             <div className="hero-facts">
               <article>
-                <span>01</span>
-                <p>Responsive layout across mobile, tablet, and desktop.</p>
+                <span>Responsive</span>
+                <p>Mobile, tablet, and desktop layouts stay readable.</p>
               </article>
               <article>
-                <span>02</span>
-                <p>Separated API service with validation, caching, and fallbacks.</p>
+                <span>Live data</span>
+                <p>OpenWeatherMap first, Open-Meteo fallback when needed.</p>
               </article>
               <article>
-                <span>03</span>
-                <p>Instructor-facing docs and screenshots inside the repository.</p>
+                <span>Review-ready</span>
+                <p>Clear states for empty, loading, results, and errors.</p>
               </article>
             </div>
           </div>
@@ -158,6 +159,7 @@ function App() {
                 data={weatherData}
                 lastUpdated={lastUpdated}
                 dataSource={dataSource}
+                providerLabel={dataProvider}
               />
               <ForecastSection forecast={forecast} />
             </div>

@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import WeatherIcon from './WeatherIcon';
 
 const ForecastSection = memo(function ForecastSection({ forecast }) {
   if (!forecast || forecast.length === 0) return null;
@@ -21,15 +22,11 @@ const ForecastSection = memo(function ForecastSection({ forecast }) {
             <p className="forecast-day">{day.dayLabel}</p>
             <p className="forecast-date">{day.date}</p>
             <div className="forecast-icon">
-              {day.iconUrl ? (
-                <img
-                  src={day.iconUrl}
-                  alt={day.iconLabel}
-                  className="forecast-icon-image"
-                />
-              ) : (
-                <span aria-hidden="true">{day.icon}</span>
-              )}
+              <WeatherIcon
+                variant={day.iconVariant}
+                label={day.iconLabel}
+                className="forecast-icon-symbol"
+              />
             </div>
             <p className="forecast-temp">
               {day.temp === 'N/A' ? 'N/A' : `${day.temp}°C`}

@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import WeatherIcon from './WeatherIcon';
 
 const detailItems = [
   { label: 'Humidity', key: 'humidity', suffix: '%' },
@@ -15,6 +16,7 @@ const WeatherCard = memo(function WeatherCard({
   data,
   lastUpdated,
   dataSource,
+  providerLabel,
 }) {
   if (!data) return null;
 
@@ -27,12 +29,14 @@ const WeatherCard = memo(function WeatherCard({
         </div>
         <div className="source-block">
           <p>{lastUpdated}</p>
-          {dataSource === 'mock' ? (
-            <span className="source-chip source-chip-demo">
-              Demo data: add your API key for live results
+          {dataSource === 'fallback' ? (
+            <span className="source-chip source-chip-fallback">
+              {providerLabel || 'Open-Meteo'} live fallback
             </span>
           ) : (
-            <span className="source-chip">Live API data</span>
+            <span className="source-chip">
+              {providerLabel || 'OpenWeatherMap'} live data
+            </span>
           )}
         </div>
       </div>
@@ -40,15 +44,11 @@ const WeatherCard = memo(function WeatherCard({
       <div className="weather-main">
         <div className="temperature-block">
           <div className="weather-glyph">
-            {data.iconUrl ? (
-              <img
-                src={data.iconUrl}
-                alt={data.iconLabel}
-                className="weather-icon-image"
-              />
-            ) : (
-              <span aria-hidden="true">{data.icon}</span>
-            )}
+            <WeatherIcon
+              variant={data.iconVariant}
+              label={data.iconLabel}
+              className="weather-icon-symbol"
+            />
           </div>
           <div>
             <p className="temperature">{data.temp === 'N/A' ? 'N/A' : `${data.temp}°C`}</p>
