@@ -16,12 +16,6 @@ function App() {
   const [error, setError] = useState('');
   const [theme, setTheme] = useState('light');
 
-  const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light';
-    setTheme(newTheme);
-    document.body.className = newTheme;
-  };
-
   const handleSearch = async (searchCity) => {
     setIsLoading(true);
     setError('');
@@ -43,7 +37,7 @@ function App() {
     <div className="app-container">
       <header className="header">
         <h1>Weather Dashboard</h1>
-        <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
+        <ThemeToggle theme={theme} setTheme={setTheme} />
       </header>
 
       <main className="main-content">
