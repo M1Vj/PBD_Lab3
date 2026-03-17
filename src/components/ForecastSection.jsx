@@ -1,4 +1,7 @@
-export default function ForecastSection({ forecast }) {
+import { memo } from 'react';
+
+// Optimization 2: React.memo prevents unnecessary re-rendering of the entire list mapping
+const ForecastSection = memo(function ForecastSection({ forecast }) {
   if (!forecast || forecast.length === 0) return null;
   
   return (
@@ -16,4 +19,6 @@ export default function ForecastSection({ forecast }) {
       </div>
     </section>
   );
-}
+});
+
+export default ForecastSection;

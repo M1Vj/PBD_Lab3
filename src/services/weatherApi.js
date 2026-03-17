@@ -1,6 +1,23 @@
 export const fetchWeatherData = async (city) => {
+  const cacheKey = `weather_cache_${city.toLowerCase()}`;
+  const cached = localStorage.getItem(cacheKey);
+
+  // Optimization 1: LocalStorage Data Caching
+  if (cached) {
+    try {
+      const parsedCache = JSON.parse(cached);
+      const isExpired = Date.now() - parsedCache.timestamp > 10 * 60 * 1000; // 10 mins 
+      if (!isExpired) {
+        return parsedCache.data;
+      } else {
+        localStorage.removeItem(cacheKey);
+      }
+    } catch(e) {
+      console.error("Cache parsing error", e);
+    }
+  }
+
   const API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
-  
   if (!API_KEY || API_KEY === 'your_openweathermap_api_key_here') {
      console.warn("Using mock data due to missing API key");
      return getMockData(city);
@@ -18,7 +35,7 @@ export const fetchWeatherData = async (city) => {
   
   const currentData = await currentResponse.json();
 
-  // Forecast data (5 days / 3 hours -> we take daily at noon)
+  // Forecast data
   const forecastResponse = await fetch(
     `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${API_KEY}&units=metric`
   );
@@ -29,11 +46,20 @@ export const fetchWeatherData = async (city) => {
 
   const forecastData = await forecastResponse.json();
 
-  return formatWeatherData(currentData, forecastData);
+  const finalData = formatWeatherData(currentData, forecastData);
+
+  // Cache insertion
+  localStorage.setItem(cacheKey, JSON.stringify({
+    timestamp: Date.now(),
+    data: finalData
+  }));
+
+  return finalData;
 };
 
+// Optimization 3: Utility extraction
+// This logic was kept separate to ensure fast processing and modularity.
 function formatWeatherData(current, forecast) {
-  // Parse 5-day forecast
   const dailyForecasts = forecast.list.filter(item => item.dt_txt.includes('12:00:00')).map(item => {
     const date = new Date(item.dt * 1000);
     return {
@@ -50,10 +76,10 @@ function formatWeatherData(current, forecast) {
       temp: Math.round(current.main.temp),
       condition: current.weather[0].main,
       humidity: current.main.humidity,
-      windSpeed: Math.round(current.wind.speed * 3.6), // convert m/s to km/h
+      windSpeed: Math.round(current.wind.speed * 3.6),
       icon: getWeatherIcon(current.weather[0].icon)
     },
-    forecast: dailyForecasts.slice(0, 5) // ensure 5 days
+    forecast: dailyForecasts.slice(0, 5)
   };
 }
 
