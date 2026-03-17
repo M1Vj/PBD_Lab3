@@ -1,16 +1,26 @@
-# React + Vite
+# Responsive Dynamic Weather Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Project Description
+A responsive, dual-theme weather dashboard built iteratively from a static HTML layout into a fully dynamic React architecture utilizing standard state hooks, local caching mechanisms, and external API requests. Built specifically to satisfy Laboratory Requirements for a complete, production-lite structural exercise without utilizing any cloud databases.
 
-Currently, two official plugins are available:
+## Technology Stack
+- **Frontend Framework**: React 18
+- **Build Tool**: Vite
+- **Styling**: Standard CSS (Flexbox/Grid variables)
+- **API**: External provider (e.g., OpenWeatherMap compatible) via `fetch`
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Setup & Running Locally
+1. Clone the repository natively.
+2. Install dependencies: `npm install`
+3. Duplicate `.env.example` into `.env` and fill the API key.
+   ```
+   VITE_WEATHER_API_KEY=your_key_here
+   ```
+4. Run locally: `npm run dev`
+5. Create production bundle: `npm run build`
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Project Structure Overview
+- **`src/components/`**: Clean UI boundaries (`SearchForm`, `WeatherCard`, `ThemeToggle`).
+- **`src/services/`**: Abstracted API logic and formatting (`weatherApi.js`).
+- **`src/styles/`**: Responsive rules, `.dark`/`.light` globals.
+- **`docs/`**: Comprehensive markdown documentation matching step-by-step implementations.
