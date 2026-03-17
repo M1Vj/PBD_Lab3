@@ -1,58 +1,75 @@
+import { useState } from 'react';
 import './styles/App.css';
+import SearchForm from './components/SearchForm';
+import WeatherCard from './components/WeatherCard';
+import ForecastSection from './components/ForecastSection';
+import ThemeToggle from './components/ThemeToggle';
+import LoadingState from './components/LoadingState';
+import ErrorState from './components/ErrorState';
 
 function App() {
+  const [city, setCity] = useState('');
+  const [weatherData, setWeatherData] = useState(null);
+  const [forecast, setForecast] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [theme, setTheme] = useState('light');
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    document.body.className = newTheme;
+  };
+
+  const handleSearch = (searchCity) => {
+    setIsLoading(true);
+    setError('');
+    
+    // Mocking an API call
+    setTimeout(() => {
+      if (searchCity.toLowerCase() === 'error') {
+        setError('City not found. Please try again.');
+        setWeatherData(null);
+        setForecast([]);
+      } else {
+        setWeatherData({
+          city: searchCity.toUpperCase(),
+          temp: 22,
+          condition: 'Clear Sky ☀️',
+          humidity: 45,
+          windSpeed: 12
+        });
+        setForecast([
+          { date: 'Oct 11', icon: '☀️', temp: 24, desc: 'Clear' },
+          { date: 'Oct 12', icon: '⛅', temp: 22, desc: 'Partly Cloudy' },
+          { date: 'Oct 13', icon: '🌧️', temp: 19, desc: 'Light Rain' },
+          { date: 'Oct 14', icon: '☁️', temp: 20, desc: 'Cloudy' },
+          { date: 'Oct 15', icon: '☀️', temp: 25, desc: 'Sunny' }
+        ]);
+      }
+      setIsLoading(false);
+    }, 1000);
+  };
+
   return (
     <div className="app-container">
       <header className="header">
         <h1>Weather Dashboard</h1>
-        <button className="theme-toggle">🌙 Dark Mode</button>
+        <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
       </header>
 
       <main className="main-content">
-        <section className="search-section">
-          <form className="search-form" onSubmit={(e) => e.preventDefault()}>
-            <input 
-              type="text" 
-              placeholder="Search for a city..." 
-              className="search-input"
-            />
-            <button type="submit" className="search-button">Search</button>
-          </form>
-        </section>
-
-        <section className="weather-section">
-          <div className="weather-card">
-            <h2 className="city-name">Tokyo, JP</h2>
-            <div className="weather-main">
-              <span className="temperature">22°C</span>
-              <span className="condition">Clear Sky ☀️</span>
-            </div>
-            <div className="weather-details">
-              <div className="detail-item">
-                <span className="label">Humidity</span>
-                <span className="value">45%</span>
-              </div>
-              <div className="detail-item">
-                <span className="label">Wind Speed</span>
-                <span className="value">12 km/h</span>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="forecast-section">
-          <h3>5-Day Forecast</h3>
-          <div className="forecast-container">
-            {[1, 2, 3, 4, 5].map((day) => (
-              <div key={day} className="forecast-card">
-                <div className="forecast-date">Oct {10 + day}</div>
-                <div className="forecast-icon">☀️</div>
-                <div className="forecast-temp">24°C</div>
-                <div className="forecast-desc">Clear</div>
-              </div>
-            ))}
-          </div>
-        </section>
+        <SearchForm city={city} setCity={setCity} onSearch={handleSearch} />
+        
+        {isLoading && <LoadingState />}
+        {error && <ErrorState message={error} />}
+        
+        {!isLoading && !error && weatherData && (
+          <>
+            <WeatherCard data={weatherData} />
+            <ForecastSection forecast={forecast} />
+          </>
+        )}
       </main>
     </div>
   );
