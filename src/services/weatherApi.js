@@ -1,123 +1,237 @@
-export const fetchWeatherData = async (city) => {
-  const cacheKey = `weather_cache_${city.toLowerCase()}`;
-  const cached = localStorage.getItem(cacheKey);
+import { resolveWeatherIcon } from '../utils/weatherIcons';
 
-  // Optimization 1: LocalStorage Data Caching
-  if (cached) {
-    try {
-      const parsedCache = JSON.parse(cached);
-      const isExpired = Date.now() - parsedCache.timestamp > 10 * 60 * 1000; // 10 mins 
-      if (!isExpired) {
-        return parsedCache.data;
-      } else {
-        localStorage.removeItem(cacheKey);
+const CACHE_TTL = 10 * 60 * 1000;
+const CURRENT_WEATHER_ENDPOINT = 'https://api.openweathermap.org/data/2.5/weather';
+const FORECAST_ENDPOINT = 'https://api.openweathermap.org/data/2.5/forecast';
+
+function safeMetric(value) {
+  return Number.isFinite(value) ? Math.round(value) : 'N/A';
+}
+
+function safeText(value, fallback) {
+  return typeof value === 'string' && value.trim() ? value : fallback;
+}
+
+function buildWeatherUrl(baseUrl, city, apiKey) {
+  const url = new URL(baseUrl);
+  url.searchParams.set('q', city);
+  url.searchParams.set('appid', apiKey);
+  url.searchParams.set('units', 'metric');
+  return url.toString();
+}
+
+async function requestJson(url, city) {
+  try {
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        throw new Error(`We couldn't find "${city}". Check the spelling and try again.`);
       }
-    } catch(e) {
-      console.error("Cache parsing error", e);
+
+      if (response.status === 401) {
+        throw new Error('The weather API key is missing or invalid. Update your local .env file.');
+      }
+
+      throw new Error('The weather service is unavailable right now. Please try again.');
     }
+
+    const payload = await response.json();
+    if (!payload || typeof payload !== 'object') {
+      throw new Error('The weather service returned an unexpected response.');
+    }
+
+    return payload;
+  } catch (error) {
+    if (error instanceof Error && error.message) {
+      if (error.message.includes("couldn't find")) {
+        throw error;
+      }
+
+      if (error.message.includes('API key is missing or invalid')) {
+        throw error;
+      }
+
+      if (error.message.includes('unexpected response')) {
+        throw error;
+      }
+    }
+
+    throw new Error(
+      'We could not reach the weather service. Check your connection and try again.',
+    );
   }
+}
 
-  const API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
-  if (!API_KEY || API_KEY === 'your_openweathermap_api_key_here') {
-     console.warn("Using mock data due to missing API key");
-     return getMockData(city);
-  }
-
-  // Current weather
-  const currentResponse = await fetch(
-    `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`
-  );
-  
-  if (!currentResponse.ok) {
-    if (currentResponse.status === 404) throw new Error('City not found');
-    throw new Error('Failed to fetch weather data');
-  }
-  
-  const currentData = await currentResponse.json();
-
-  // Forecast data
-  const forecastResponse = await fetch(
-    `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${API_KEY}&units=metric`
-  );
-
-  if (!forecastResponse.ok) {
-    throw new Error('Failed to fetch forecast data');
-  }
-
-  const forecastData = await forecastResponse.json();
-
-  const finalData = formatWeatherData(currentData, forecastData);
-
-  // Cache insertion
-  localStorage.setItem(cacheKey, JSON.stringify({
-    timestamp: Date.now(),
-    data: finalData
-  }));
-
-  return finalData;
-};
-
-// Optimization 3: Utility extraction
-// This logic was kept separate to ensure fast processing and modularity.
-function formatWeatherData(current, forecast) {
-  const dailyForecasts = forecast.list.filter(item => item.dt_txt.includes('12:00:00')).map(item => {
-    const date = new Date(item.dt * 1000);
-    return {
-      date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-      temp: Math.round(item.main.temp),
-      desc: item.weather[0].main,
-      icon: getWeatherIcon(item.weather[0].icon)
-    };
-  });
+function normalizeCurrentWeather(current) {
+  const primaryWeather = current.weather?.[0] || {};
+  const icon = resolveWeatherIcon(primaryWeather.icon);
 
   return {
-    current: {
-      city: current.name,
-      temp: Math.round(current.main.temp),
-      condition: current.weather[0].main,
-      humidity: current.main.humidity,
-      windSpeed: Math.round(current.wind.speed * 3.6),
-      icon: getWeatherIcon(current.weather[0].icon)
-    },
-    forecast: dailyForecasts.slice(0, 5)
+    city: safeText(current.name, 'Unknown location'),
+    temp: safeMetric(current.main?.temp),
+    condition: safeText(primaryWeather.main, 'Unknown conditions'),
+    conditionDetail: safeText(
+      primaryWeather.description,
+      'Detailed weather notes are unavailable.',
+    ),
+    humidity: safeMetric(current.main?.humidity),
+    windSpeed: Number.isFinite(current.wind?.speed)
+      ? Math.round(current.wind.speed * 3.6)
+      : 'N/A',
+    feelsLike: safeMetric(current.main?.feels_like),
+    pressure: safeMetric(current.main?.pressure),
+    icon: icon.symbol,
+    iconLabel: icon.label,
+    iconUrl: icon.iconUrl,
   };
 }
 
-function getWeatherIcon(iconCode) {
-  const iconMap = {
-    '01d': '☀️', '01n': '🌙',
-    '02d': '⛅', '02n': '☁️',
-    '03d': '☁️', '03n': '☁️',
-    '04d': '☁️', '04n': '☁️',
-    '09d': '🌧️', '09n': '🌧️',
-    '10d': '🌧️', '10n': '🌧️',
-    '11d': '☔', '11n': '☔',
-    '13d': '❄️', '13n': '❄️',
-    '50d': '🌫️', '50n': '🌫️'
+function normalizeForecastDay(item) {
+  const primaryWeather = item.weather?.[0] || {};
+  const icon = resolveWeatherIcon(primaryWeather.icon);
+  const date = new Date(item.dt * 1000);
+
+  return {
+    date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+    dayLabel: date.toLocaleDateString('en-US', { weekday: 'short' }),
+    temp: safeMetric(item.main?.temp),
+    desc: safeText(primaryWeather.main, 'Unavailable'),
+    icon: icon.symbol,
+    iconLabel: icon.label,
+    iconUrl: icon.iconUrl,
   };
-  return iconMap[iconCode] || '🌤️';
+}
+
+export function formatWeatherData(current, forecast, source = 'live') {
+  const forecastList = Array.isArray(forecast.list) ? forecast.list : [];
+  const middayEntries = forecastList.filter(
+    (item) => typeof item?.dt_txt === 'string' && item.dt_txt.includes('12:00:00'),
+  );
+
+  return {
+    current: normalizeCurrentWeather(current),
+    forecast: middayEntries.slice(0, 5).map(normalizeForecastDay),
+    meta: {
+      source,
+      fetchedAtLabel: `Updated ${new Date().toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        minute: '2-digit',
+      })}`,
+    },
+  };
+}
+
+function getCacheKey(city) {
+  return `weather_cache_${city.toLowerCase()}`;
+}
+
+function getCachedWeather(city) {
+  const cached = localStorage.getItem(getCacheKey(city));
+  if (!cached) return null;
+
+  try {
+    const parsed = JSON.parse(cached);
+    const expired = Date.now() - parsed.timestamp > CACHE_TTL;
+    if (expired) {
+      localStorage.removeItem(getCacheKey(city));
+      return null;
+    }
+    return parsed.data;
+  } catch {
+    localStorage.removeItem(getCacheKey(city));
+    return null;
+  }
+}
+
+function setCachedWeather(city, data) {
+  localStorage.setItem(
+    getCacheKey(city),
+    JSON.stringify({
+      timestamp: Date.now(),
+      data,
+    }),
+  );
 }
 
 function getMockData(city) {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     setTimeout(() => {
-      resolve({
-        current: {
-          city: city.toUpperCase(),
-          temp: Math.floor(Math.random() * 30),
-          condition: 'Mocked Clear ☀️',
-          humidity: 50,
-          windSpeed: 10,
-          icon: '☀️'
-        },
-        forecast: [
-          { date: 'Tomorrow', icon: '☀️', temp: 24, desc: 'Clear' },
-          { date: 'Day 2', icon: '⛅', temp: 22, desc: 'Partly Cloudy' },
-          { date: 'Day 3', icon: '🌧️', temp: 19, desc: 'Light Rain' },
-          { date: 'Day 4', icon: '☁️', temp: 20, desc: 'Cloudy' },
-          { date: 'Day 5', icon: '☀️', temp: 25, desc: 'Sunny' }
-        ]
-      })
+      resolve(
+        formatWeatherData(
+          {
+            name: city,
+            main: {
+              temp: 29,
+              humidity: 78,
+              feels_like: 33,
+              pressure: 1008,
+            },
+            weather: [{ main: 'Clear', description: 'clear sky', icon: '01d' }],
+            wind: { speed: 4.8 },
+          },
+          {
+            list: [
+              {
+                dt: 1710000000,
+                dt_txt: '2024-03-09 12:00:00',
+                main: { temp: 30 },
+                weather: [{ main: 'Clear', icon: '01d' }],
+              },
+              {
+                dt: 1710086400,
+                dt_txt: '2024-03-10 12:00:00',
+                main: { temp: 29 },
+                weather: [{ main: 'Clouds', icon: '03d' }],
+              },
+              {
+                dt: 1710172800,
+                dt_txt: '2024-03-11 12:00:00',
+                main: { temp: 28 },
+                weather: [{ main: 'Rain', icon: '10d' }],
+              },
+              {
+                dt: 1710259200,
+                dt_txt: '2024-03-12 12:00:00',
+                main: { temp: 27 },
+                weather: [{ main: 'Thunderstorm', icon: '11d' }],
+              },
+              {
+                dt: 1710345600,
+                dt_txt: '2024-03-13 12:00:00',
+                main: { temp: 31 },
+                weather: [{ main: 'Sunny', icon: '01d' }],
+              },
+            ],
+          },
+          'mock',
+        ),
+      );
     }, 500);
   });
+}
+
+export async function fetchWeatherData(city) {
+  const cached = getCachedWeather(city);
+  if (cached) {
+    return cached;
+  }
+
+  const apiKey = import.meta.env.VITE_WEATHER_API_KEY;
+  if (!apiKey || apiKey === 'your_openweathermap_api_key_here') {
+    return getMockData(city);
+  }
+
+  const currentWeather = await requestJson(
+    buildWeatherUrl(CURRENT_WEATHER_ENDPOINT, city, apiKey),
+    city,
+  );
+  const forecastWeather = await requestJson(
+    buildWeatherUrl(FORECAST_ENDPOINT, city, apiKey),
+    city,
+  );
+
+  const formatted = formatWeatherData(currentWeather, forecastWeather);
+  setCachedWeather(city, formatted);
+  return formatted;
 }

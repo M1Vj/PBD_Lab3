@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Static Weather Dashboard Reference</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+        background:
+          radial-gradient(circle at top left, rgba(215, 133, 73, 0.22), transparent 24%),
+          radial-gradient(circle at bottom right, rgba(15, 108, 123, 0.18), transparent 26%),
+          #f3eee6;
+        color: #1f2430;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+      }
+
+      .page {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 2rem 1rem 3rem;
+      }
+
+      .panel {
+        background: rgba(255, 252, 247, 0.88);
+        border: 1px solid rgba(31, 36, 48, 0.1);
+        border-radius: 24px;
+        padding: 1.5rem;
+        box-shadow: 0 22px 48px rgba(45, 54, 72, 0.12);
+      }
+
+      .hero {
+        margin-bottom: 1rem;
+      }
+
+      .hero h1,
+      .card h2,
+      .forecast h2 {
+        font-family: "Palatino Linotype", Georgia, serif;
+        margin: 0 0 0.75rem;
+      }
+
+      .hero p,
+      .forecast-card p:last-child {
+        color: #596273;
+      }
+
+      .search {
+        display: grid;
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .search label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+      }
+
+      .search-row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 0.75rem;
+      }
+
+      input,
+      button {
+        font: inherit;
+        min-height: 3.25rem;
+        border-radius: 16px;
+      }
+
+      input {
+        border: 1px solid rgba(31, 36, 48, 0.15);
+        padding: 0 1rem;
+        background: #fffaf3;
+      }
+
+      button {
+        border: none;
+        padding: 0 1.4rem;
+        background: linear-gradient(135deg, #0f6c7b, #d78549);
+        color: white;
+        font-weight: 700;
+      }
+
+      .results {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .card,
+      .forecast {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .current-layout {
+        display: grid;
+        grid-template-columns: 1.1fr 1fr;
+        gap: 1rem;
+      }
+
+      .current-highlight,
+      .metric,
+      .forecast-card {
+        border-radius: 18px;
+        border: 1px solid rgba(31, 36, 48, 0.1);
+        background: #fffaf3;
+      }
+
+      .current-highlight {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 1rem;
+        align-items: center;
+        padding: 1rem;
+      }
+
+      .symbol {
+        width: 4.5rem;
+        height: 4.5rem;
+        display: grid;
+        place-items: center;
+        border-radius: 20px;
+        background: rgba(15, 108, 123, 0.1);
+        font-size: 2rem;
+      }
+
+      .temp {
+        font-size: 4rem;
+        margin: 0;
+      }
+
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.75rem;
+      }
+
+      .metric,
+      .forecast-card {
+        padding: 1rem;
+      }
+
+      .metric strong,
+      .forecast-card strong {
+        display: block;
+        margin-bottom: 0.35rem;
+      }
+
+      .forecast-grid {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 0.75rem;
+      }
+
+      @media (max-width: 900px) {
+        .current-layout,
+        .forecast-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 640px) {
+        .search-row,
+        .current-layout,
+        .forecast-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <section class="panel hero">
+        <p>Static reference for Part 1</p>
+        <h1>Hardcoded Weather Dashboard Mockup</h1>
+        <p>
+          This file stays completely static. It uses fixed values to show what
+          the weather interface looked like before React state and API requests
+          were added.
+        </p>
+      </section>
+
+      <section class="panel search">
+        <div>
+          <label for="city">City or municipality</label>
+          <div class="search-row">
+            <input id="city" type="text" value="Manila" readonly />
+            <button type="button">Search weather</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="results">
+        <section class="panel card">
+          <div>
+            <p>Current Weather</p>
+            <h2>Manila</h2>
+          </div>
+          <div class="current-layout">
+            <div class="current-highlight">
+              <div class="symbol">☀</div>
+              <div>
+                <p class="temp">31°C</p>
+                <p>Clear</p>
+                <p>Warm afternoon conditions</p>
+              </div>
+            </div>
+            <div class="metrics">
+              <div class="metric"><strong>Humidity</strong>72%</div>
+              <div class="metric"><strong>Wind speed</strong>14 km/h</div>
+              <div class="metric"><strong>Feels like</strong>35°C</div>
+              <div class="metric"><strong>Pressure</strong>1007 hPa</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel forecast">
+          <div>
+            <p>Forecast Outlook</p>
+            <h2>Five-day forecast</h2>
+          </div>
+          <div class="forecast-grid">
+            <article class="forecast-card"><strong>Mon</strong>30°C<p>Clear</p></article>
+            <article class="forecast-card"><strong>Tue</strong>29°C<p>Clouds</p></article>
+            <article class="forecast-card"><strong>Wed</strong>28°C<p>Rain</p></article>
+            <article class="forecast-card"><strong>Thu</strong>27°C<p>Storm</p></article>
+            <article class="forecast-card"><strong>Fri</strong>31°C<p>Sunny</p></article>
+          </div>
+        </section>
+      </section>
+    </main>
+  </body>
+</html>
