@@ -6,7 +6,7 @@ export default function WeatherCard({ data }) {
         <h2 className="city-name">{data.city}</h2>
         <div className="weather-main">
           <span className="temperature">{data.temp}°C</span>
-          <span className="condition">{data.condition}</span>
+          <span className="condition">{data.condition} {data.icon}</span>
         </div>
         <div className="weather-details">
           <div className="detail-item">

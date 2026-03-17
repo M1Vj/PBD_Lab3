@@ -6,6 +6,7 @@ import ForecastSection from './components/ForecastSection';
 import ThemeToggle from './components/ThemeToggle';
 import LoadingState from './components/LoadingState';
 import ErrorState from './components/ErrorState';
+import { fetchWeatherData } from './services/weatherApi';
 
 function App() {
   const [city, setCity] = useState('');
@@ -21,34 +22,21 @@ function App() {
     document.body.className = newTheme;
   };
 
-  const handleSearch = (searchCity) => {
+  const handleSearch = async (searchCity) => {
     setIsLoading(true);
     setError('');
+    setWeatherData(null);
+    setForecast([]);
     
-    // Mocking an API call
-    setTimeout(() => {
-      if (searchCity.toLowerCase() === 'error') {
-        setError('City not found. Please try again.');
-        setWeatherData(null);
-        setForecast([]);
-      } else {
-        setWeatherData({
-          city: searchCity.toUpperCase(),
-          temp: 22,
-          condition: 'Clear Sky ☀️',
-          humidity: 45,
-          windSpeed: 12
-        });
-        setForecast([
-          { date: 'Oct 11', icon: '☀️', temp: 24, desc: 'Clear' },
-          { date: 'Oct 12', icon: '⛅', temp: 22, desc: 'Partly Cloudy' },
-          { date: 'Oct 13', icon: '🌧️', temp: 19, desc: 'Light Rain' },
-          { date: 'Oct 14', icon: '☁️', temp: 20, desc: 'Cloudy' },
-          { date: 'Oct 15', icon: '☀️', temp: 25, desc: 'Sunny' }
-        ]);
-      }
+    try {
+      const data = await fetchWeatherData(searchCity);
+      setWeatherData(data.current);
+      setForecast(data.forecast);
+    } catch (err) {
+      setError(err.message || 'Failed to fetch the weather data');
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   return (
