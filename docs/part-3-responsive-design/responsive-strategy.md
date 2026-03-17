@@ -1,7 +1,18 @@
-# Responsive Strategy
-The application explicitly uses modern CSS Grid and Flexbox within `src/styles/App.css` to build an adaptable layout.
-Breakpoints established via `@media` tags enforce visual shifts when on limited width screens.
+# Part 3: Responsive Strategy
 
-- **Desktop (>768px)**: Forecast displays in a single row taking full horizontal space sequentially.
-- **Tablet (<768px)**: Forecast items wrap into a grid pattern where items stretch across `calc(33.333% - 1rem)`.
-- **Mobile (<480px)**: Content stacks sequentially. Forms stack perfectly. The weather card details rearrange into vertical rows instead of a horizontal stretch.
+The dashboard uses a mobile-first layout. Small screens get stacked sections first, then the layout expands into columns as more space becomes available.
+
+## What changes by screen size
+
+- Mobile: single-column layout, stacked form controls, single-column forecast cards
+- Tablet: wider hero section, split search row, 2-column forecast layout
+- Desktop: two-column results area and 5-column forecast grid
+
+## Layout tools used
+
+- CSS Grid for the hero, results layout, and forecast layout
+- Flexbox for small internal alignments such as buttons and status panels
+
+## Why this strategy works
+
+The current weather card is the highest-priority content, so it stays easy to read on all screen sizes. The forecast expands only when there is enough room for comparison.

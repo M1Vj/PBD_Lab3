@@ -1,40 +1,40 @@
-@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
 :root {
-  --font-display: "Archivo", "Arial Narrow", sans-serif;
-  --font-body: "Archivo", "Segoe UI", sans-serif;
+  --font-display: "IBM Plex Sans", "Segoe UI", sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", sans-serif;
   --font-mono: "IBM Plex Mono", "SFMono-Regular", monospace;
-  --bg-page: #f7f2ea;
-  --bg-panel: rgba(255, 251, 245, 0.94);
-  --bg-panel-strong: #fffdf9;
-  --bg-panel-muted: #f0e7d8;
-  --text-main: #111111;
-  --text-soft: #4f4a45;
-  --accent-main: #ff2f6d;
-  --accent-strong: #111111;
-  --accent-warm: #f4cf4f;
-  --border-soft: rgba(17, 17, 17, 0.18);
-  --shadow-soft: 8px 8px 0 rgba(17, 17, 17, 0.92);
-  --status-error: #b3123c;
-  --status-error-bg: rgba(255, 47, 109, 0.08);
-  --status-loading-bg: rgba(244, 207, 79, 0.16);
+  --bg-page: #f4f0ea;
+  --bg-panel: rgba(255, 255, 255, 0.96);
+  --bg-panel-strong: #fcfbf8;
+  --bg-panel-muted: #eef1f3;
+  --text-main: #14171b;
+  --text-soft: #5d6670;
+  --accent-main: #285f7a;
+  --accent-strong: #14171b;
+  --accent-warm: #d7e1e8;
+  --border-soft: rgba(20, 23, 27, 0.12);
+  --shadow-soft: 0 16px 36px rgba(20, 23, 27, 0.08);
+  --status-error: #b24a4a;
+  --status-error-bg: rgba(178, 74, 74, 0.08);
+  --status-loading-bg: rgba(40, 95, 122, 0.08);
 }
 
 body.theme-dark {
-  --bg-page: #0c0c0f;
-  --bg-panel: rgba(20, 20, 24, 0.96);
-  --bg-panel-strong: #15161a;
-  --bg-panel-muted: #1f2026;
-  --text-main: #f5f2ed;
-  --text-soft: #cac3ba;
-  --accent-main: #ff5b89;
-  --accent-strong: #f5f2ed;
-  --accent-warm: #f4cf4f;
-  --border-soft: rgba(245, 242, 237, 0.16);
-  --shadow-soft: 8px 8px 0 rgba(244, 207, 79, 0.7);
-  --status-error: #ff7ca2;
-  --status-error-bg: rgba(255, 91, 137, 0.12);
-  --status-loading-bg: rgba(244, 207, 79, 0.12);
+  --bg-page: #101419;
+  --bg-panel: rgba(20, 24, 30, 0.96);
+  --bg-panel-strong: #171c22;
+  --bg-panel-muted: #202833;
+  --text-main: #f2f5f7;
+  --text-soft: #b5c0c9;
+  --accent-main: #89b7cf;
+  --accent-strong: #f2f5f7;
+  --accent-warm: #27323a;
+  --border-soft: rgba(242, 245, 247, 0.12);
+  --shadow-soft: 0 20px 40px rgba(0, 0, 0, 0.26);
+  --status-error: #ff9d9d;
+  --status-error-bg: rgba(255, 157, 157, 0.1);
+  --status-loading-bg: rgba(137, 183, 207, 0.1);
 }
 
 * {
@@ -49,13 +49,7 @@ body {
   margin: 0;
   min-width: 320px;
   font-family: var(--font-body);
-  background:
-    linear-gradient(rgba(17, 17, 17, 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(17, 17, 17, 0.06) 1px, transparent 1px),
-    radial-gradient(circle at top left, rgba(255, 47, 109, 0.16), transparent 22%),
-    radial-gradient(circle at bottom right, rgba(244, 207, 79, 0.12), transparent 22%),
-    var(--bg-page);
-  background-size: 2.6rem 2.6rem, 2.6rem 2.6rem, auto, auto, auto;
+  background: var(--bg-page);
   color: var(--text-main);
   transition: background-color 0.25s ease, color 0.25s ease;
 }

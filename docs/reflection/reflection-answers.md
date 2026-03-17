@@ -1,13 +1,17 @@
 # Reflection Answers
 
-**1. Why was React selected for this project?**
-React was selected because its component-based architecture directly addresses the problem of scalability seen in the static Part 1. Constructing reusable units like `WeatherCard` and `ForecastSection` and wiring them to a top-level state via `App.jsx` naturally allowed real-time updates and seamless data fetching without rigid DOM manipulation or full page refreshes.
+## 1. Why was React selected for this project?
 
-**2. What was the most difficult part of integrating the API?**
-The complexity arose from manipulating two distinct data structures (the `current` API format and the `forecast` list array). OpenWeatherMap returns forecasts every 3 hours natively, which meant writing logic in `weatherApi.js` to effectively filter these down into a 5-day format that only extracts the noontime values required for the layout.
+React was selected because the interface depends on changing data and repeated user interaction. It is easier to manage a search form, request status, theme state, and weather results when the UI updates from state instead of manual DOM changes.
 
-**3. How did responsive design improve usability?**
-It eliminated horizontal scrolling entirely. Moving from a broad Desktop layout (where the 5 forecast cards fit perfectly alongside each other) directly to a vertical stacked list on Mobile guaranteed that the text sizing and hit targets (like the search button and theme toggle) remained highly accessible without the user needing to pinch and zoom.
+## 2. What was the most difficult part of integrating the API?
 
-**4. Which optimization had the greatest impact and why?**
-The LocalStorage Caching block inside `weatherApi.js` provided the largest impact visually and economically. Because weather metrics do not change minute by minute, saving the parsed `finalData` string to local storage with a 10-minute expiry completely mitigated overlapping API pinging if users navigated or rapid-searched. It prevents API rate-limiting thresholds and makes the load time instant.
+The hardest part was not the fetch call itself. The harder part was cleaning the response so the interface would stay stable even when some fields were missing. Forecast data also arrives in 3-hour blocks, so it had to be simplified into a cleaner 5-day view.
+
+## 3. How did responsive design improve usability?
+
+Responsive design made the same dashboard usable on phone, tablet, and desktop without horizontal scrolling. The search controls stay touch-friendly, and the forecast becomes easier to compare as more space becomes available.
+
+## 4. Which optimization had the greatest impact and why?
+
+The local cache had the biggest practical impact. It cuts repeat API requests for the same city, which makes the app feel faster and also reduces unnecessary network usage.

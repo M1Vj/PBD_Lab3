@@ -1,11 +1,28 @@
-# State Management
-State is managed locally using React's `useState` hook. 
+# Part 2: State Management
 
-- `city`: Tracks the current input string.
-- `weatherData`: Stores the current mock weather data object.
-- `forecast`: Stores an array of 5 daily forecast objects.
-- `isLoading`: Boolean to show/hide the LoadingState component.
-- `error`: String to display meaningful error messages if a search fails.
-- `theme`: String ('light' | 'dark') tracking the UI appearance.
+The project uses React state in one top-level component so the weather flow stays predictable.
 
-Lifting state to `App.jsx` allows data to flow downward correctly into pure presentational components like `WeatherCard` and `ForecastSection`.
+## Main state values
+
+- `city`: the current text inside the search field
+- `weatherData`: the normalized current weather object
+- `forecast`: the normalized 5-day forecast list
+- `isLoading`: controls the loading panel while a request is in progress
+- `error`: stores the current request error message
+- `validationMessage`: stores form-level validation feedback
+- `theme`: stores the selected light or dark theme
+- `hasSearched`: distinguishes the empty state from later request states
+- `lastUpdated`: stores the display text for when the weather data was last prepared
+- `dataSource`: shows whether the dashboard is using live data or demo fallback data
+
+## Why the state lives in `App.jsx`
+
+The same state affects several parts of the interface at once:
+
+- the search panel
+- the loading panel
+- the error panel
+- the weather card
+- the forecast section
+
+Keeping that state in one parent component prevents duplicated logic and avoids components disagreeing about what the current request status is.
