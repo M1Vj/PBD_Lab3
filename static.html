@@ -5,14 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Static Weather Dashboard Reference</title>
     <style>
+      @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap");
+
       :root {
         color-scheme: light;
-        font-family: "Trebuchet MS", "Segoe UI", sans-serif;
-        background:
-          radial-gradient(circle at top left, rgba(215, 133, 73, 0.22), transparent 24%),
-          radial-gradient(circle at bottom right, rgba(15, 108, 123, 0.18), transparent 26%),
-          #f3eee6;
-        color: #1f2430;
+        font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+        background: #f4f0ea;
+        color: #14171b;
+        --bg-panel: rgba(255, 255, 255, 0.96);
+        --bg-panel-strong: #fcfbf8;
+        --text-soft: #5d6670;
+        --accent-main: #285f7a;
+        --border-soft: rgba(20, 23, 27, 0.12);
+        --shadow-soft: 0 16px 36px rgba(20, 23, 27, 0.08);
       }
 
       * {
@@ -22,48 +27,120 @@
       body {
         margin: 0;
         min-height: 100vh;
+        background: radial-gradient(circle at top left, rgba(40, 95, 122, 0.06), transparent 22%), #f4f0ea;
       }
 
       .page {
-        max-width: 1080px;
+        max-width: 1240px;
         margin: 0 auto;
-        padding: 2rem 1rem 3rem;
+        padding: 1.25rem 1rem 3rem;
       }
 
       .panel {
-        background: rgba(255, 252, 247, 0.88);
-        border: 1px solid rgba(31, 36, 48, 0.1);
-        border-radius: 24px;
-        padding: 1.5rem;
-        box-shadow: 0 22px 48px rgba(45, 54, 72, 0.12);
+        background: var(--bg-panel);
+        border: 1px solid var(--border-soft);
+        border-radius: 16px;
+        padding: 1.1rem;
+        box-shadow: var(--shadow-soft);
       }
 
       .hero {
+        display: grid;
+        gap: 0.75rem;
         margin-bottom: 1rem;
+        border-top: 3px solid var(--accent-main);
+      }
+
+      .hero-top {
+        display: flex;
+        align-items: start;
+        justify-content: space-between;
+        gap: 1rem;
+      }
+
+      .tag,
+      .eyebrow {
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.72rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--accent-main);
       }
 
       .hero h1,
       .card h2,
-      .forecast h2 {
-        font-family: "Palatino Linotype", Georgia, serif;
-        margin: 0 0 0.75rem;
+      .forecast h2,
+      .search h2 {
+        margin: 0;
+        font-size: clamp(1.3rem, 2.4vw, 1.95rem);
+        line-height: 1;
       }
 
       .hero p,
-      .forecast-card p:last-child {
-        color: #596273;
+      .forecast-card p:last-child,
+      .search-copy p,
+      .detail {
+        color: var(--text-soft);
+      }
+
+      .hero p,
+      .search-copy p {
+        max-width: 58ch;
+        line-height: 1.45;
+        font-size: 0.92rem;
+      }
+
+      .theme-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        min-height: 2.6rem;
+        padding: 0.7rem 1rem;
+        border-radius: 999px;
+        border: 1px solid var(--border-soft);
+        background: var(--bg-panel-strong);
+        font-weight: 600;
+      }
+
+      .hero-facts {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.55rem;
+      }
+
+      .hero-facts article {
+        display: grid;
+        gap: 0.25rem;
+        padding: 0.58rem 0.65rem;
+        border-radius: 12px;
+        border: 1px solid var(--border-soft);
+        background: var(--bg-panel-strong);
+      }
+
+      .hero-facts p {
+        font-size: 0.78rem;
+        line-height: 1.4;
       }
 
       .search {
         display: grid;
-        gap: 1rem;
+        gap: 1.1rem;
         margin-bottom: 1rem;
+        border-left: 3px solid var(--accent-main);
+      }
+
+      .search-copy {
+        display: grid;
+        gap: 0.45rem;
       }
 
       .search label {
         display: block;
         margin-bottom: 0.5rem;
         font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.86rem;
+        letter-spacing: 0.08em;
       }
 
       .search-row {
@@ -75,22 +152,23 @@
       input,
       button {
         font: inherit;
-        min-height: 3.25rem;
-        border-radius: 16px;
+        min-height: 3.35rem;
+        border-radius: 12px;
       }
 
       input {
-        border: 1px solid rgba(31, 36, 48, 0.15);
+        border: 1px solid var(--border-soft);
         padding: 0 1rem;
-        background: #fffaf3;
+        background: var(--bg-panel-strong);
       }
 
       button {
         border: none;
         padding: 0 1.4rem;
-        background: linear-gradient(135deg, #0f6c7b, #d78549);
+        background: #285f7a;
         color: white;
         font-weight: 700;
+        border-radius: 999px;
       }
 
       .results {
@@ -102,43 +180,46 @@
       .forecast {
         display: grid;
         gap: 1rem;
+        border-top: 3px solid var(--accent-main);
       }
 
       .current-layout {
         display: grid;
-        grid-template-columns: 1.1fr 1fr;
+        grid-template-columns: 1.2fr 1fr;
         gap: 1rem;
       }
 
       .current-highlight,
       .metric,
       .forecast-card {
-        border-radius: 18px;
-        border: 1px solid rgba(31, 36, 48, 0.1);
-        background: #fffaf3;
+        border-radius: 14px;
+        border: 1px solid var(--border-soft);
+        background: var(--bg-panel-strong);
       }
 
       .current-highlight {
         display: grid;
         grid-template-columns: auto 1fr;
-        gap: 1rem;
+        gap: 0.85rem;
         align-items: center;
-        padding: 1rem;
+        padding: 0.85rem;
       }
 
       .symbol {
-        width: 4.5rem;
-        height: 4.5rem;
-        display: grid;
-        place-items: center;
-        border-radius: 20px;
-        background: rgba(15, 108, 123, 0.1);
-        font-size: 2rem;
+        width: 4rem;
+        height: 4rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 14px;
+        border: 1px solid var(--border-soft);
+        color: #64748b;
       }
 
       .temp {
-        font-size: 4rem;
+        font-size: 3.3rem;
         margin: 0;
+        letter-spacing: -0.08em;
       }
 
       .metrics {
@@ -149,7 +230,7 @@
 
       .metric,
       .forecast-card {
-        padding: 1rem;
+        padding: 0.85rem;
       }
 
       .metric strong,
@@ -158,23 +239,78 @@
         margin-bottom: 0.35rem;
       }
 
+      .metric strong {
+        color: var(--text-soft);
+      }
+
+      .meta-row {
+        display: flex;
+        align-items: start;
+        justify-content: space-between;
+        gap: 1rem;
+      }
+
+      .source {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.35rem 0.65rem;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        background: rgba(40, 95, 122, 0.1);
+        border: 1px solid rgba(40, 95, 122, 0.14);
+        color: var(--accent-main);
+      }
+
       .forecast-grid {
         display: grid;
         grid-template-columns: repeat(5, minmax(0, 1fr));
         gap: 0.75rem;
       }
 
+      .forecast-head {
+        display: flex;
+        align-items: start;
+        justify-content: space-between;
+        gap: 1rem;
+      }
+
+      .forecast-card {
+        display: grid;
+        gap: 0.35rem;
+      }
+
+      .forecast-card p:last-child {
+        text-transform: uppercase;
+        font-size: 0.72rem;
+        letter-spacing: 0.06em;
+      }
+
+      svg {
+        width: 2.6rem;
+        height: 2.6rem;
+      }
+
       @media (max-width: 900px) {
-        .current-layout,
+        .hero-facts,
         .forecast-grid {
           grid-template-columns: repeat(2, minmax(0, 1fr));
         }
       }
 
       @media (max-width: 640px) {
+        .hero-top,
         .search-row,
         .current-layout,
-        .forecast-grid {
+        .forecast-grid,
+        .meta-row,
+        .forecast-head {
+          grid-template-columns: 1fr;
+          flex-direction: column;
+          align-items: start;
+        }
+
+        .hero-facts {
           grid-template-columns: 1fr;
         }
       }
@@ -183,16 +319,39 @@
   <body>
     <main class="page">
       <section class="panel hero">
-        <p>Static reference for Part 1</p>
-        <h1>Hardcoded Weather Dashboard Mockup</h1>
-        <p>
-          This file stays completely static. It uses fixed values to show what
-          the weather interface looked like before React state and API requests
-          were added.
-        </p>
+        <div class="hero-top">
+          <div>
+            <p class="tag">PBD Lab 3</p>
+            <h1>Weather dashboard</h1>
+            <p>
+              This static file mirrors the final visual direction, but all values
+              stay hardcoded to represent the design-only stage of the project.
+            </p>
+          </div>
+          <div class="theme-pill">◐ Dark theme</div>
+        </div>
+        <div class="hero-facts">
+          <article>
+            <span class="eyebrow">Responsive</span>
+            <p>Mobile, tablet, and desktop layouts stay readable.</p>
+          </article>
+          <article>
+            <span class="eyebrow">Static</span>
+            <p>This page shows the UI shape before React state and live data.</p>
+          </article>
+          <article>
+            <span class="eyebrow">Review-ready</span>
+            <p>Current weather sits first, with the forecast block underneath.</p>
+          </article>
+        </div>
       </section>
 
       <section class="panel search">
+        <div class="search-copy">
+          <p class="tag">Search Panel</p>
+          <h2>Check a city in seconds</h2>
+          <p>Enter a city or municipality name to load current conditions and a five-day forecast.</p>
+        </div>
         <div>
           <label for="city">City or municipality</label>
           <div class="search-row">
@@ -204,17 +363,27 @@
 
       <section class="results">
         <section class="panel card">
-          <div>
-            <p>Current Weather</p>
-            <h2>Manila</h2>
+          <div class="meta-row">
+            <div>
+              <p class="tag">Current Weather</p>
+              <h2>Manila</h2>
+            </div>
+            <div>
+              <p class="detail">Updated 11:17 AM</p>
+              <div class="source">Static reference data</div>
+            </div>
           </div>
           <div class="current-layout">
             <div class="current-highlight">
-              <div class="symbol">☀</div>
+              <div class="symbol" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M16 16a4 4 0 0 0 0-8 5.5 5.5 0 0 0-10.7 1.5A3.5 3.5 0 0 0 6.5 16H16Z"></path>
+                </svg>
+              </div>
               <div>
                 <p class="temp">31°C</p>
-                <p>Clear</p>
-                <p>Warm afternoon conditions</p>
+                <p><strong>Clouds</strong></p>
+                <p class="detail">Scattered afternoon clouds</p>
               </div>
             </div>
             <div class="metrics">
@@ -227,16 +396,19 @@
         </section>
 
         <section class="panel forecast">
-          <div>
-            <p>Forecast Outlook</p>
-            <h2>Five-day forecast</h2>
+          <div class="forecast-head">
+            <div>
+              <p class="tag">Forecast Outlook</p>
+              <h2>Five-day forecast</h2>
+            </div>
+            <p class="detail">Midday forecast snapshots keep each day easy to compare at a glance.</p>
           </div>
           <div class="forecast-grid">
-            <article class="forecast-card"><strong>Mon</strong>30°C<p>Clear</p></article>
-            <article class="forecast-card"><strong>Tue</strong>29°C<p>Clouds</p></article>
-            <article class="forecast-card"><strong>Wed</strong>28°C<p>Rain</p></article>
-            <article class="forecast-card"><strong>Thu</strong>27°C<p>Storm</p></article>
-            <article class="forecast-card"><strong>Fri</strong>31°C<p>Sunny</p></article>
+            <article class="forecast-card"><strong>Tue</strong>26°C<p>Clouds</p></article>
+            <article class="forecast-card"><strong>Wed</strong>26°C<p>Clouds</p></article>
+            <article class="forecast-card"><strong>Thu</strong>26°C<p>Clouds</p></article>
+            <article class="forecast-card"><strong>Fri</strong>27°C<p>Clouds</p></article>
+            <article class="forecast-card"><strong>Sat</strong>27°C<p>Night clouds</p></article>
           </div>
         </section>
       </section>

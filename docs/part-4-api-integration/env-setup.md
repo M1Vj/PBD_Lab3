@@ -18,10 +18,10 @@ VITE_WEATHER_API_KEY=your_actual_openweathermap_key
 
 - The API key stays out of version control
 - The code can safely read the key through `import.meta.env`
-- The same project can run in demo mode without exposing a real secret
+- The same project can still run on a live fallback provider without exposing a real secret
 
 ## Reviewer note
 
-If `.env` is not present, the dashboard falls back to clearly-labeled demo data instead of failing with a blank screen.
+If `.env` is not present, the dashboard falls back to clearly-labeled live data from Open-Meteo instead of failing with a blank screen.
 
-If the API key is newly created in OpenWeatherMap, it may also require email confirmation before live requests start succeeding. In this workspace, the key existed locally, but the provider still reported it as invalid until account confirmation is completed.
+If the API key is newly created in OpenWeatherMap, it may also require email confirmation before live requests start succeeding. In that situation, the project still keeps working through the fallback path and shows that source in the current-weather panel.

@@ -2,9 +2,9 @@
 
 ## Key choices
 
-- The hero panel sits above the app so the project reads like a complete dashboard instead of a single card.
+- The hero panel sits above the app, but it is intentionally compact so it does not push the weather content too far down.
 - The search area stays near the top so it is easy to reach on all screen sizes.
-- The current weather section and forecast section are visually separated for a clearer information hierarchy.
+- The current weather section appears first, and the forecast section now stays below it so the reading order remains practical.
 - The forecast becomes a 5-column grid on desktop because that is the easiest way to compare multiple days quickly.
 
 ## Usability impact

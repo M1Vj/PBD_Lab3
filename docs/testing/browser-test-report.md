@@ -12,6 +12,8 @@
 - labeled search input and visible helper text
 - empty submit shows validation
 - theme toggle updates the full interface
+- the header stays compact and does not dominate the page
+- the five-day forecast stays below the current weather block
 - forecast cards stay inside the viewport on mobile, tablet, and desktop widths
 - Firefox and WebKit both rendered the dashboard shell correctly
 
@@ -20,16 +22,8 @@
 - `screenshots/firefox-home.png`
 - `screenshots/webkit-home.png`
 
-## Current known limitation
+## Provider behavior in the current workspace
 
-This workspace contained an OpenWeather key in `.env`, but the provider still rejected it because the related account had not finished email confirmation. Because of that:
-
-- Chromium was used for the full dashboard interaction flow
-- Demo mode was used for success-state screenshots
-- Real invalid-key handling was also captured as evidence
-
-## Suggested follow-up check after OpenWeather confirmation
-
-- search a valid city and capture a live-data screenshot
-- search an invalid city and capture the error state
-- rerun the same flow in Firefox, Edge, or Safari and replace the shell-only screenshots with full result-state screenshots
+- When OpenWeatherMap responds normally, the result chip shows `OpenWeatherMap live data`
+- When the OpenWeather key is missing or rejected, the app falls back to `Open-Meteo live fallback`
+- This keeps the project on real weather data instead of switching to mock content

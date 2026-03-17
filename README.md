@@ -14,7 +14,7 @@ This repository contains the full submission for Laboratory Activity 3. It start
 - React 19 with functional components
 - Vite for local development and production build output
 - CSS with responsive breakpoints and theme variables
-- OpenWeatherMap endpoints for current weather and 5-day forecast
+- OpenWeatherMap as the primary weather source with Open-Meteo as a live fallback
 - Vitest and Testing Library for behavior checks
 
 ## How To Run Locally
@@ -77,6 +77,6 @@ package.json
 
 ## Notes For The Reviewer
 
-- If `.env` is missing, the UI transparently switches to demo data so the dashboard still renders and the interaction flow stays visible.
-- For real live weather verification, add a valid API key to `.env` before testing.
+- If `.env` is missing or the OpenWeather key is not working yet, the UI falls back to live weather data from Open-Meteo instead of using mock data.
+- For primary-provider verification, add a valid OpenWeather API key to `.env` before testing.
 - The main documentation for explanation, screenshots, and evidence lives in [`/Users/vjmabansag/Projects/PBD_Lab3/docs`](/Users/vjmabansag/Projects/PBD_Lab3/docs).

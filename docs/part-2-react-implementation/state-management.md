@@ -13,7 +13,8 @@ The project uses React state in one top-level component so the weather flow stay
 - `theme`: stores the selected light or dark theme
 - `hasSearched`: distinguishes the empty state from later request states
 - `lastUpdated`: stores the display text for when the weather data was last prepared
-- `dataSource`: shows whether the dashboard is using live data or demo fallback data
+- `dataSource`: shows whether the dashboard is using the primary live provider or the fallback live provider
+- `dataProvider`: stores the provider name shown in the current-weather source chip
 
 ## Why the state lives in `App.jsx`
 
